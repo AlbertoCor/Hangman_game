@@ -1,10 +1,10 @@
 import os
 import random
+import numpy
 # import pygame
 
 # to be added to another file
 #------------------------------------------------------
-
 def display():
     pass
 
@@ -15,81 +15,85 @@ def two_players():
     pass
 
 #------------------------------------------------------
-#Check this open file
-#(
-    #     words = []
-    # with open('./files/data.txt', 'r', encoding='utf-8') as file: # Here we get the words from the file and make a list
-    #     for line in file:
-    #         words.append(line.strip().upper())
-
-    # the_word = random.choice(words).upper() #Here we make the '_' list according to the random selected word
-    # the_secret_word = ['_' for letter in the_word]
-    # keep_trying = True
-# )
-
-
 
 def read():
     words = []
     with open("Python_Intermedio\Hangman_Game\Data\data.txt", "r", encoding="utf-8") as f:
         for line in f:
-            words.append(line)
-            # print(line)
-    word = list(words)
-    randomword = random.choice(word)
+            words.append(line.strip())
+    randomword = random.choice(words)
     print(f"\nEsta es la palabra secreta: {randomword}")
     return randomword
 
+def normalize(s): # It removes the accents of a string
+    replacements = (
+        ("á", "a"),
+        ("é", "e"),
+        ("í", "i"),
+        ("ó", "o"),
+        ("ú", "u"),
+    )
+    for a, b in replacements:
+        s = s.replace(a, b).replace(a.upper(), b.upper())
+    return s
+
 def hide_words(word):
-    the_secret_word = ['_' for letter in word]
-    numb_underline = len(word.rstrip())
-    # print(numb_underline)
-    under_line = "_"
-    print(under_line * numb_underline)
+    hide = ['_' for letter in word]     # With this loop generate number of underdash of the secret word
+    hide_word = "".join(hide)           # Here join underdash of a hidden secret word
+    print(hide_word)                    # Test output underdash of secret word
+    return hide
 
-def compare_words(randomword, lines):
-    # lenght = list(enumerate(randomword.rstrip(),0))
-    # print(lenght)
-    # if guess_word in str(lenght):
-        # print("ther its a letter")        
-    rand_word = list(randomword)
-    hiden_lines = list(lines)
-    keep_try = True
-    while keep_try:
-        # assert len(user) == 1, "presiona mas de una letra"
-        os.system("cls")        #clear windows every try
-        for i in range(0, len(rand_word)):
-            if rand_word[i] == keep_try:
-                hiden_lines[i] = rand_word[i]
-        print(hiden_lines.upper())
-        print("\n")
-    print("you win")
+def compare_words(randomword, guess_letter, hide_word):      
+    # assert len(user) == 1, "presiona mas de una letra"
+    you_got_it = False
+    for l in range(len(randomword)):        #This is the check for every input
+        # print(l)
+        # the_letter = normalize(randomword[l])
+        rand_word = randomword[l]
+        # print(rand_word)
+        if guess_letter == rand_word:
+            if guess_letter == hide_word[l]:
+                print("you dont guess one >:V")
+                you_got_it = True
+                # continue
+            else:
+                hide_word[l] = randomword[l]
+                print("you have guess one :V")
+                # points += 100
+                you_got_it = True
+                # continue
+    if you_got_it == False: #This is the life check
+        input('You lose one life, PRESS A KEY TO CONTINUE')
+    # lifes -= 1
+    # if lifes == -1:
+    #     print(f'The word was {the_word}')
+    #     choice = input('☠ Press X to play again, press any other key to quit ☠').upper()
+    #     if choice == 'X':
+    #         lifes = 7
+    #         the_word = random.choice(words)
+    #         the_secret_word = ['_' for letter in the_word]
+    #         continue
+    #     else:
+            # break
 
-    #   for i in range(len(the_word)): #This is the check for every input
-    #         for l in range(len(the_word)):
-    #             the_letter = normalize(the_word[l])
-    #             if your_letter == the_letter:
-    #                 if your_letter == the_secret_word[l]:
-    #                     you_got_it = True
-    #                     continue
-    #                 else:
-    #                     the_secret_word[l] = the_word[l]
-    #                     points += 100
-    #                     you_got_it = True
-    #                     continue
-        
+
+def life_points():
+    pass
 
 def run():
-
+    keep_try = True
     rand_word = read()
-    # hide_words(rand_word)
-    # lines = hide_words()
-    lines = "blue"
-    # hide_letter = list(enumerate(rand_word))
-    # guess_word = input("Teclea una letra: ")
-    compare_words("blue", lines)
-       
-
+    hide_word = hide_words(rand_word)
+    while keep_try:
+        os.system("cls")        #clear windows every try
+        printable_secret_word = ''.join(hide_word) #It's the random selected word but like this ______ and it's being updated
+        if printable_secret_word == rand_word: #This is the win check
+            print("you win")
+        print(printable_secret_word)
+        print(f"Esta es la palabra secret: {rand_word}")
+        guess_letter = input("\nTeclea una letra: ")
+        compare_words(rand_word , guess_letter, hide_word)
+        
 
 if __name__ == "__main__":
     run()
